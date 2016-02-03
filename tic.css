@@ -1,0 +1,23 @@
+html {
+	box-sizing: border-box;
+	background-color:black;
+}
+
+*, *:before, *:after {
+	box-sizing:inherit;
+	margin:0;
+}
+
+#board-container {
+	position:absolute;
+	background-color:darkgreen;
+	min-width:70vmin;
+	min-height:70vmin;
+}
+
+.board-square {
+	position:absolute;
+	border:.5vh solid black;
+	background-color:transparent;
+}
+	
