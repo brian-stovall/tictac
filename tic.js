@@ -82,6 +82,8 @@ document.addEventListener('DOMContentLoaded', function() {
 					choice.style['background-image'] = (aiMark === eks) ?
 						'url(' + eksImage + ')' :
 						'url(' + ohImage + ')' ;
+						choice.classList.add('animated');
+						choice.classList.add( (aiMark === oh) ? 'zoomInLeft' : 'bounceIn');
 			}
 
 			for (i = 0; i < squares.length; i++) {
@@ -92,6 +94,8 @@ document.addEventListener('DOMContentLoaded', function() {
 						this.style['background-image'] = (playerMark === eks) ?
 							'url(' + eksImage + ')' :
 							'url(' + ohImage + ')' ;
+						this.classList.add('animated');
+						this.classList.add((playerMark === oh) ? 'zoomInLeft' : 'bounceIn');
 						
 						if (checkWin(boardState, playerMark)) newGame ('I lost - impossible!? Rematch!');
 						if (checkDraw(boardState)) window.setTimeout(callRematch, 1000);
@@ -102,6 +106,8 @@ document.addEventListener('DOMContentLoaded', function() {
 						choice.style['background-image'] = (aiMark === eks) ?
 							'url(' + eksImage + ')' :
 							'url(' + ohImage + ')' ;
+						choice.classList.add('animated');
+						choice.classList.add( (aiMark === oh) ? 'zoomInLeft' : 'bounceIn');
 
 						if (checkWin(boardState, aiMark)) window.setTimeout(gloat, 1000);
 						if (checkDraw(boardState)) window.setTimeout(callRematch, 1000);
@@ -126,6 +132,9 @@ document.addEventListener('DOMContentLoaded', function() {
 		for (i = 0; i < squares.length; i++) {
 			squares[i].style.visibility = 'hidden';
 			squares[i].style['background-image'] = '';
+			squares[i].classList.remove('animated');
+			squares[i].classList.remove('bounceIn');
+			squares[i].classList.remove('zoomInLeft');
 		}
 
 		greeting.textContent = message;
