@@ -93,8 +93,8 @@ document.addEventListener('DOMContentLoaded', function() {
 							'url(' + eksImage + ')' :
 							'url(' + ohImage + ')' ;
 						
-						if (checkWin(boardState, playerMark)) alert ('player wins');
-						if (checkDraw(boardState)) alert ('draw');
+						if (checkWin(boardState, playerMark)) newGame ('I lost - impossible!? Rematch!');
+						if (checkDraw(boardState)) window.setTimeout(callRematch, 1000);
 
 						//ai gets a move
 						var choice = document.getElementById(aiChoice(boardState, aiMark, playerMark));
@@ -103,13 +103,35 @@ document.addEventListener('DOMContentLoaded', function() {
 							'url(' + eksImage + ')' :
 							'url(' + ohImage + ')' ;
 
-						if (checkWin(boardState, aiMark)) alert ('ai wins');
-						if (checkDraw(boardState)) alert ('draw');
+						if (checkWin(boardState, aiMark)) window.setTimeout(gloat, 1000);
+						if (checkDraw(boardState)) window.setTimeout(callRematch, 1000);
 					}
 				}
 		};
+	}
+
+	function callRematch() {
+		newGame('A draw? Rematch!');
+	}
+
+	function gloat() {
+		newGame('That\'s how it\'s done. Again?');
+	};
 
 
+	//begins a new game with a message
+	function newGame(message) {
+		boardState = initBoard();
+		winBoard.style.visiblity = 'hidden';
+		for (i = 0; i < squares.length; i++) {
+			squares[i].style.visibility = 'hidden';
+			squares[i].style['background-image'] = '';
+		}
+
+		greeting.textContent = message;
+		for (var i = 0; i < cats.length; i++) 
+			cats[i].style.visibility = 'visible';
+		greeting.style.visibility = 'visible';
 	}
 
 //array helper functions-------------------------------------------------------
