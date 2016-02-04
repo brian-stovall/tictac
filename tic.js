@@ -53,11 +53,7 @@ document.addEventListener('DOMContentLoaded', function() {
 				if (checkWin(boardState, playerMark)) alert ('player wins');
 
 				//ai gets a move
-				console.log('ai is choosing. Default Choice : ' + aiDefaultChoice(boardState));
-				console.log('getTrips(boardState)) ' + getTrips(boardState));
-				console.log('empty board: ' + getEmptyFromTrips(getTrips(boardState)));
 				var choice = document.getElementById(aiChoice(boardState, aiMark, playerMark));
-				console.log('ai chooses: ' + choice.id);
 				placeMarker(aiMark, boardState, choice.id);
 				choice.style['background-image'] = (aiMark === eks) ?
 					'url(' + eksImage + ')' :
@@ -133,14 +129,24 @@ document.addEventListener('DOMContentLoaded', function() {
 
 	//returns an array of the possible moves from a trip
 	function getEmptyTrip(trip) {
-		return trip.filter( (val) => { return (val[0] === empty) ? true : false;}).
+		return temp =  trip.filter( (val) => { return (val[0] === empty) ? true : false;}).
 			map( (val) => {return val[1]});
 	}
 
 	//returns an array of the possible moves from a set of trips
-	function getEmptyFromTrips(trips) {
-		return trips.map( (val) => {return getEmptyTrip(val);}).
+	function getMoves(trips) {
+		var moves = [];
+		var temp = trips.map( (val) => {return getEmptyTrip(val);}).
 			filter( (val) => {return val.length > 0;});
+
+		//now to flatten and unique-ify them
+		for (var i = 0; i < temp.length; i++)
+			for (var j = 0; j < temp.length; j++)
+				moves.push(temp[i][j]);
+
+		//finally, filter the empty entries
+		return unique(moves).filter( (val) => {return val;});
+
 	}
 
 	//returns the corners in a trip style
@@ -149,6 +155,11 @@ document.addEventListener('DOMContentLoaded', function() {
 						[board['20'], '20'],
 						[board['02'], '02'],
 						[board['22'], '22']];
+	}
+
+	//removes all duplicates from an array
+	function unique(arr) {
+		return arr.filter( (val, idx, array) => { return array.indexOf(val) === idx; });
 	}
 
 	//randomly choose an array element, or false for empty array
@@ -163,39 +174,18 @@ document.addEventListener('DOMContentLoaded', function() {
 		//first, favor the middle if possible
 		if (board['11'] === empty) return '11';
 		else 
-			return (randomArrayElem(getEmptyFromTrips(getCorners(board))) || 
-				randomArrayElem(getEmptyFromTrips(getTrips(board))));
+			//then move to the corners and finally, any randome space
+			return (randomArrayElem(getMoves(getCorners(board))) || 
+				randomArrayElem(getMoves(getTrips(board))));
 	}
 
 	//ai function - first looks for a winning move, then a blocking one
 	//then chooses a default one
 	function aiChoice(board, aiMark, playerMark) {
-		var choice = randomArrayElem(getEmptyFromTrips(getAtaris(board, aiMark)));
-		console.log('ai winning moves: ' + getAtaris(board, aiMark));
-		if (choice) {
-			return choice;
-		}
-
-		choice = randomArrayElem(getEmptyFromTrips(getAtaris(board, playerMark)));
-		console.log('ai blocking moves: ' + getAtaris(board, aiMark));
-		if (choice) {
-			return choice;
-		}
-
-		choice = aiDefaultChoice(board);
-		if (choice) {
-			return choice;
-		}
-
-		console.log('ai could not choose!');
-		return null;
-
-		/*
 		return (
-			randomArrayElem(getAtaris(board, aiMark)) ||
-			randomArrayElem(getAtaris(board, playerMark)) ||
+			randomArrayElem(getMoves(getAtaris(board, aiMark))) ||
+			randomArrayElem(getMoves(getAtaris(board, playerMark))) ||
 			aiDefaultChoice(board));
-		*/
 	}
 
 	//place a marker on the board
