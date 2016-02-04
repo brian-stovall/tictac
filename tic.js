@@ -27,7 +27,6 @@ document.addEventListener('DOMContentLoaded', function() {
 	//set up the board squares
 	for (var i = 0; i < squares.length; i++) {
 		var square = squares[i];
-		console.log('setting up ' + square.id);
 
 		//give them widths and heights
 		square.style['min-width'] = squareSize + 'px';
@@ -45,7 +44,8 @@ document.addEventListener('DOMContentLoaded', function() {
 		square.textContent = square.id;
 
 		square.onclick = function() {
-			if (placeMarker(playerMark, boardState, this.id)) {
+			var validChoice = placeMarker(playerMark, boardState, this.id);
+			if (validChoice === true) {
 				this.style['background-image'] = (playerMark === eks) ?
 					'url(' + eksImage + ')' :
 					'url(' + ohImage + ')' ;
@@ -53,6 +53,9 @@ document.addEventListener('DOMContentLoaded', function() {
 				if (checkWin(boardState, playerMark)) alert ('player wins');
 
 				//ai gets a move
+				console.log('ai is choosing. Default Choice : ' + aiDefaultChoice(boardState));
+				console.log('getTrips(boardState)) ' + getTrips(boardState));
+				console.log('empty board: ' + getEmptyFromTrips(getTrips(boardState)));
 				var choice = document.getElementById(aiChoice(boardState, aiMark, playerMark));
 				console.log('ai chooses: ' + choice.id);
 				placeMarker(aiMark, boardState, choice.id);
@@ -75,7 +78,6 @@ document.addEventListener('DOMContentLoaded', function() {
 			for (var j = 0; j < 3; j++)
 				board[i+''+j] = empty;
 
-		console.log('board initialized: ' + Object.keys(board).toString());
 		return board;
 	}
 
@@ -88,17 +90,19 @@ document.addEventListener('DOMContentLoaded', function() {
 
 		//first the vertical and horizontal trips
 		for (var i = 0; i < 3; i++) {
-			trips.push(keys.filter( (val) => {return val[0] === i;}));
-			trips.push(keys.filter( (val) => {return val[1] === i;}));
+			trips.push(keys.filter( (val) => {return val[0] === i.toString();}));
+			trips.push(keys.filter( (val) => {return val[1] === i.toString();}));
 		}
 
 		//now the two diagonal trips
 		trips.push(['00', '11', '22']);
 		trips.push(['02', '11', '20']);
 
+
 		//now return all the corresponding values
 		for (i = 0; i < trips.length; i++)
-			trips[i] = trips[i].map( (val) => {return [board.val, val];});
+			trips[i] = trips[i].map( (val) => {return [board[val], val];});
+
 
 		return trips;
 	}
@@ -113,24 +117,30 @@ document.addEventListener('DOMContentLoaded', function() {
 	//returns a list of trips have num amount of a marker
 	function checkBoard(board, num, marker) {
 		var trips = getTrips(board);
-		return trips.filter( (val) => {return countInTrip (val, num, marker);});
+		trips = trips.filter( (val) => {return countInTrip(val, num, marker);});
+		return trips;
 	}
 
 	//composes the functions to look for a win for the marker
-	function checkWin (board, marker) {
+	function checkWin(board, marker) {
 		return checkBoard(board, 3, marker).length > 0;
 	}
 
 	//looks for trips that have winning/losing moves
-	function getAtaris (board, marker) {
+	function getAtaris(board, marker) {
 		return checkBoard(board, 2, marker);
 	}
 
 	//returns an array of the possible moves from a trip
 	function getEmptyTrip(trip) {
-		return trip.filter( (val) => 
-			{return (val[0] === empty) ? true : false;}).
-			map( (entry) => {return entry[1]});
+		return trip.filter( (val) => { return (val[0] === empty) ? true : false;}).
+			map( (val) => {return val[1]});
+	}
+
+	//returns an array of the possible moves from a set of trips
+	function getEmptyFromTrips(trips) {
+		return trips.map( (val) => {return getEmptyTrip(val);}).
+			filter( (val) => {return val.length > 0;});
 	}
 
 	//returns the corners in a trip style
@@ -144,7 +154,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	//randomly choose an array element, or false for empty array
 	function randomArrayElem(arr) {
 		if (arr.length === 0) return false;
-		return arr[Math.floor(Math.random * (arr.length + 1))];
+		return arr[Math.floor(Math.random() * arr.length)];
 	}
 
   //ai method to make a choice when there are no
@@ -153,22 +163,43 @@ document.addEventListener('DOMContentLoaded', function() {
 		//first, favor the middle if possible
 		if (board['11'] === empty) return '11';
 		else 
-			return (randomArrayElem(getEmptyTrip(getCorners(board))) || 
-				randomArrayElem(getEmptyTrip(getTrips(board))));
+			return (randomArrayElem(getEmptyFromTrips(getCorners(board))) || 
+				randomArrayElem(getEmptyFromTrips(getTrips(board))));
 	}
 
 	//ai function - first looks for a winning move, then a blocking one
 	//then chooses a default one
 	function aiChoice(board, aiMark, playerMark) {
+		var choice = randomArrayElem(getEmptyFromTrips(getAtaris(board, aiMark)));
+		console.log('ai winning moves: ' + getAtaris(board, aiMark));
+		if (choice) {
+			return choice;
+		}
+
+		choice = randomArrayElem(getEmptyFromTrips(getAtaris(board, playerMark)));
+		console.log('ai blocking moves: ' + getAtaris(board, aiMark));
+		if (choice) {
+			return choice;
+		}
+
+		choice = aiDefaultChoice(board);
+		if (choice) {
+			return choice;
+		}
+
+		console.log('ai could not choose!');
+		return null;
+
+		/*
 		return (
 			randomArrayElem(getAtaris(board, aiMark)) ||
 			randomArrayElem(getAtaris(board, playerMark)) ||
 			aiDefaultChoice(board));
+		*/
 	}
 
 	//place a marker on the board
 	function placeMarker(marker, board, space) {
-		console.log('trying to place marker on: ' + board[space]);
 		if (board[space] !== empty) return false;
 		else {
 			board[space] = marker;
