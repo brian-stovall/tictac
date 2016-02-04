@@ -83,7 +83,7 @@ document.addEventListener('DOMContentLoaded', function() {
 						'url(' + eksImage + ')' :
 						'url(' + ohImage + ')' ;
 						choice.classList.add('animated');
-						choice.classList.add( (aiMark === oh) ? 'zoomInLeft' : 'bounceIn');
+						choice.classList.add( (aiMark === oh) ? 'zoomInLeft' : 'slideInDown');
 			}
 
 			for (i = 0; i < squares.length; i++) {
@@ -95,7 +95,7 @@ document.addEventListener('DOMContentLoaded', function() {
 							'url(' + eksImage + ')' :
 							'url(' + ohImage + ')' ;
 						this.classList.add('animated');
-						this.classList.add((playerMark === oh) ? 'zoomInLeft' : 'bounceIn');
+						this.classList.add((playerMark === oh) ? 'zoomInLeft' : 'slideInDown');
 						
 						if (checkWin(boardState, playerMark)) newGame ('I lost - impossible!? Rematch!');
 						if (checkDraw(boardState)) window.setTimeout(callRematch, 1000);
@@ -107,7 +107,7 @@ document.addEventListener('DOMContentLoaded', function() {
 							'url(' + eksImage + ')' :
 							'url(' + ohImage + ')' ;
 						choice.classList.add('animated');
-						choice.classList.add( (aiMark === oh) ? 'zoomInLeft' : 'bounceIn');
+						choice.classList.add( (aiMark === oh) ? 'zoomInLeft' : 'slideInDown');
 
 						if (checkWin(boardState, aiMark)) window.setTimeout(gloat, 1000);
 						if (checkDraw(boardState)) window.setTimeout(callRematch, 1000);
@@ -133,7 +133,7 @@ document.addEventListener('DOMContentLoaded', function() {
 			squares[i].style.visibility = 'hidden';
 			squares[i].style['background-image'] = '';
 			squares[i].classList.remove('animated');
-			squares[i].classList.remove('bounceIn');
+			squares[i].classList.remove('slideInDown');
 			squares[i].classList.remove('zoomInLeft');
 		}
 
