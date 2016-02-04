@@ -53,10 +53,10 @@ document.addEventListener('DOMContentLoaded', function() {
 				if (checkWin(boardState, playerMark)) alert ('player wins');
 
 				//ai gets a move
-				var choice = aiChoice(boardState, aiMark, playerMark);
-				console.log('ai chooses: ' + choice);
-				placeMarker(aiMark, choice);
-				document.getElementById(choice).style['background-image'] = (aiMark === eks) ?
+				var choice = document.getElementById(aiChoice(boardState, aiMark, playerMark));
+				console.log('ai chooses: ' + choice.id);
+				placeMarker(aiMark, boardState, choice.id);
+				choice.style['background-image'] = (aiMark === eks) ?
 					'url(' + eksImage + ')' :
 					'url(' + ohImage + ')' ;
 
@@ -168,6 +168,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 	//place a marker on the board
 	function placeMarker(marker, board, space) {
+		console.log('trying to place marker on: ' + board[space]);
 		if (board[space] !== empty) return false;
 		else {
 			board[space] = marker;
