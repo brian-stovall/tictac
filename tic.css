@@ -1,6 +1,9 @@
 html {
+	height:100vh;
+	width:100vw;
 	box-sizing: border-box;
-	background-color:black;
+	background-image:url('assets/dojo.jpg');
+	background-size:cover;
 }
 
 *, *:before, *:after {
@@ -8,17 +11,35 @@ html {
 	margin:0;
 }
 
+
 #board-container {
 	position:absolute;
-	background-color:darkgreen;
+	background-color:transparent;
 	min-width:70vmin;
 	min-height:70vmin;
 }
 
 .board-square {
 	position:absolute;
-	border:.5vh solid black;
+	border-width:.5vh;
+	border-style:solid;
+	border-color:black;
 	background-color:transparent;
 	background-size:cover;
 }
-	
+
+#\30 0, #\31 0, #\32 0 {
+	border-top-width:0;
+}
+
+#\30 0, #\30 1, #\30 2 {
+	border-left-width:0;
+}
+
+#\30 2, #\31 2, #\32 2 {
+	border-bottom-width:0;
+}
+
+#\32 1, #\32 0, #\32 2 {
+	border-right-width:0;
+}

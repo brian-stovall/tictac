@@ -40,9 +40,6 @@ document.addEventListener('DOMContentLoaded', function() {
 		square.style.top = squareSize * square.y + 'px';
 		square.style.left = squareSize * square.x + 'px';
 
-		//temporary
-		square.textContent = square.id;
-
 		square.onclick = function() {
 			var validChoice = placeMarker(playerMark, boardState, this.id);
 			if (validChoice === true) {
@@ -51,6 +48,7 @@ document.addEventListener('DOMContentLoaded', function() {
 					'url(' + ohImage + ')' ;
 				
 				if (checkWin(boardState, playerMark)) alert ('player wins');
+				if (checkDraw(boardState)) alert ('draw');
 
 				//ai gets a move
 				var choice = document.getElementById(aiChoice(boardState, aiMark, playerMark));
@@ -60,10 +58,27 @@ document.addEventListener('DOMContentLoaded', function() {
 					'url(' + ohImage + ')' ;
 
 				if (checkWin(boardState, aiMark)) alert ('ai wins');
+				if (checkDraw(boardState)) alert ('draw');
 			}
 		};
 
+
 	}
+
+//array helper functions-------------------------------------------------------
+
+	//removes all duplicates from an array
+	function unique(arr) {
+		return arr.filter( (val, idx, array) => 
+			{ return array.indexOf(val) === idx; });
+	}
+
+	//randomly choose an array element, or false for empty array
+	function randomArrayElem(arr) {
+		if (arr.length === 0) return false;
+		return arr[Math.floor(Math.random() * arr.length)];
+	}
+
 
 //begin code for internal game state-------------------------------------------
 
@@ -122,6 +137,12 @@ document.addEventListener('DOMContentLoaded', function() {
 		return checkBoard(board, 3, marker).length > 0;
 	}
 
+	//check for a draw
+	function checkDraw(board) {
+		return (getMoves(getTrips(board)).length === 0)
+	}
+
+
 	//looks for trips that have winning/losing moves
 	function getAtaris(board, marker) {
 		return checkBoard(board, 2, marker);
@@ -157,37 +178,6 @@ document.addEventListener('DOMContentLoaded', function() {
 						[board['22'], '22']];
 	}
 
-	//removes all duplicates from an array
-	function unique(arr) {
-		return arr.filter( (val, idx, array) => { return array.indexOf(val) === idx; });
-	}
-
-	//randomly choose an array element, or false for empty array
-	function randomArrayElem(arr) {
-		if (arr.length === 0) return false;
-		return arr[Math.floor(Math.random() * arr.length)];
-	}
-
-  //ai method to make a choice when there are no
-	//wins or neccessary blocking moves
-	function aiDefaultChoice(board) {
-		//first, favor the middle if possible
-		if (board['11'] === empty) return '11';
-		else 
-			//then move to the corners and finally, any randome space
-			return (randomArrayElem(getMoves(getCorners(board))) || 
-				randomArrayElem(getMoves(getTrips(board))));
-	}
-
-	//ai function - first looks for a winning move, then a blocking one
-	//then chooses a default one
-	function aiChoice(board, aiMark, playerMark) {
-		return (
-			randomArrayElem(getMoves(getAtaris(board, aiMark))) ||
-			randomArrayElem(getMoves(getAtaris(board, playerMark))) ||
-			aiDefaultChoice(board));
-	}
-
 	//place a marker on the board
 	function placeMarker(marker, board, space) {
 		if (board[space] !== empty) return false;
@@ -196,6 +186,35 @@ document.addEventListener('DOMContentLoaded', function() {
 			return true;
 		}
 	}
-
 //end game state code----------------------------------------------------------
+
+//begin ai code----------------------------------------------------------------
+
+  //ai method to make a choice when there are no
+	//wins or neccessary blocking moves
+	function aiDefaultChoice(board) {
+		//first, favor the middle if possible
+		if (board['11'] === empty) return '11';
+		else {
+			//console.log('available corners: ' + getEmptyTrip(getCorners(board)));
+			//then move to the corners and finally, any random space
+			return (randomArrayElem(getEmptyTrip(getCorners(board))) || 
+				randomArrayElem(getMoves(getTrips(board))));
+		}
+	}
+
+	//ai function - first looks for a winning move, then a blocking one
+	//then chooses a default one
+	function aiChoice(board, aiMark, playerMark) {
+		//console.log('ataris: ' + getAtaris(board, aiMark));
+		//console.log('blocks: ' + getAtaris(board, playerMark));
+		return (
+			randomArrayElem(getMoves(getAtaris(board, aiMark))) ||
+			randomArrayElem(getMoves(getAtaris(board, playerMark))) ||
+			aiDefaultChoice(board));
+	}
+
+//end ai code-------------------------------------------------------------------
+
+
 });
