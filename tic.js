@@ -3,6 +3,8 @@ document.addEventListener('DOMContentLoaded', function() {
 	var grab = document.getElementById.bind(document);
 	var winBoard = grab('board-container');
 	var squares = winBoard.getElementsByClassName('board-square');
+	var eksCat = grab('eksCat');
+	var ohCat = grab('ohCat');
 
 	//images
 	var eksImage = 'assets/pusheen.png';
@@ -14,8 +16,30 @@ document.addEventListener('DOMContentLoaded', function() {
 	var empty = '_';
 
 	var boardState = initBoard();
-	var playerMark = eks;
-	var aiMark = oh;
+	var playerMark;
+	var aiMark;
+
+	//center place the eksCat and ohCat images
+	var cats = document.getElementsByClassName('catImg');
+	for (var i = 0; i < cats.length; i++) {
+		cats[i].style.top = (window.innerHeight - cats[i].offsetHeight)/1.5 + 'px';
+		cats[i].style.left = (window.innerWidth - 2 * cats[i].offsetWidth)/3 * (i+1) 
+			+ (i*cats[i].offsetWidth) + 'px';
+	}
+
+	//set up click functions for cats
+	ohCat.onclick = () => {
+		playerMark = oh;
+		aiMark = eks;
+		begin();
+	}
+
+	eksCat.onclick = () => {
+		playerMark = eks;
+		aiMark = oh;
+		begin();
+	}
+
 
 	//center the board
 	winBoard.style.top = (window.innerHeight - winBoard.offsetHeight)/2 + 'px';
@@ -39,27 +63,50 @@ document.addEventListener('DOMContentLoaded', function() {
 		//place them in the window
 		square.style.top = squareSize * square.y + 'px';
 		square.style.left = squareSize * square.x + 'px';
+	}
 
-		square.onclick = function() {
-			var validChoice = placeMarker(playerMark, boardState, this.id);
-			if (validChoice === true) {
-				this.style['background-image'] = (playerMark === eks) ?
-					'url(' + eksImage + ')' :
-					'url(' + ohImage + ')' ;
-				
-				if (checkWin(boardState, playerMark)) alert ('player wins');
-				if (checkDraw(boardState)) alert ('draw');
+		//starts the game
+	function begin() {
+			//set the stage
+			for (var i = 0; i < cats.length; i++) 
+				cats[i].style.visibility = 'hidden';
+			greeting.style.visibility = 'hidden';
+			winBoard.style.visiblity = 'visible';
+			for (i = 0; i < squares.length; i++)
+				squares[i].style.visibility = 'visible';
 
-				//ai gets a move
-				var choice = document.getElementById(aiChoice(boardState, aiMark, playerMark));
-				placeMarker(aiMark, boardState, choice.id);
-				choice.style['background-image'] = (aiMark === eks) ?
-					'url(' + eksImage + ')' :
-					'url(' + ohImage + ')' ;
-
-				if (checkWin(boardState, aiMark)) alert ('ai wins');
-				if (checkDraw(boardState)) alert ('draw');
+			//oh always starts, so if aiMark is oh, give the ai a turn first
+			if (aiMark === oh) {
+					var choice = document.getElementById(aiChoice(boardState, aiMark, playerMark));
+					placeMarker(aiMark, boardState, choice.id);
+					choice.style['background-image'] = (aiMark === eks) ?
+						'url(' + eksImage + ')' :
+						'url(' + ohImage + ')' ;
 			}
+
+			for (i = 0; i < squares.length; i++) {
+				var square = squares[i];
+				square.onclick = function() {
+					var validChoice = placeMarker(playerMark, boardState, this.id);
+					if (validChoice === true) {
+						this.style['background-image'] = (playerMark === eks) ?
+							'url(' + eksImage + ')' :
+							'url(' + ohImage + ')' ;
+						
+						if (checkWin(boardState, playerMark)) alert ('player wins');
+						if (checkDraw(boardState)) alert ('draw');
+
+						//ai gets a move
+						var choice = document.getElementById(aiChoice(boardState, aiMark, playerMark));
+						placeMarker(aiMark, boardState, choice.id);
+						choice.style['background-image'] = (aiMark === eks) ?
+							'url(' + eksImage + ')' :
+							'url(' + ohImage + ')' ;
+
+						if (checkWin(boardState, aiMark)) alert ('ai wins');
+						if (checkDraw(boardState)) alert ('draw');
+					}
+				}
 		};
 
 

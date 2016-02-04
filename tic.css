@@ -11,8 +11,33 @@ html {
 	margin:0;
 }
 
+.catImg {
+	position:absolute;
+	background-size:cover;
+	min-width:30vmin;
+	min-height:30vmin;
+}
+
+#eksCat {
+	background-image:url('assets/pusheen.png');
+}
+
+#ohCat {
+	background-image:url('assets/nyan.png');
+}
+
+#greeting {
+	position:absolute;
+	top:25vh;
+	width:100vw;
+	text-align:center;
+	font-size:5vw;
+}
+	
+
 
 #board-container {
+	visibility:hidden;
 	position:absolute;
 	background-color:transparent;
 	min-width:70vmin;
@@ -20,6 +45,7 @@ html {
 }
 
 .board-square {
+	visibility:inherit;
 	position:absolute;
 	border-width:.5vh;
 	border-style:solid;
