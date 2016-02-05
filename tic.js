@@ -45,6 +45,8 @@ document.addEventListener('DOMContentLoaded', function() {
 	winBoard.style.top = (window.innerHeight - winBoard.offsetHeight)/2 + 'px';
 	winBoard.style.left = (window.innerWidth - winBoard.offsetWidth)/2 + 'px';
 
+	winBoard.style.visibility = 'hidden';
+
 	//get an appropriate square size
 	var squareSize = winBoard.offsetWidth/3;
 
@@ -67,13 +69,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
 		//starts the game
 	function begin() {
-			//set the stage
+
 			for (var i = 0; i < cats.length; i++) 
 				cats[i].style.visibility = 'hidden';
 			greeting.style.visibility = 'hidden';
-			winBoard.style.visiblity = 'visible';
 			for (i = 0; i < squares.length; i++)
 				squares[i].style.visibility = 'visible';
+			winBoard.style.visibility = 'visible';
 
 			//oh always starts, so if aiMark is oh, give the ai a turn first
 			if (aiMark === oh) {
@@ -128,7 +130,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	//begins a new game with a message
 	function newGame(message) {
 		boardState = initBoard();
-		winBoard.style.visiblity = 'hidden';
+		winBoard.style.visibility = 'hidden';
 		for (i = 0; i < squares.length; i++) {
 			squares[i].style.visibility = 'hidden';
 			squares[i].style['background-image'] = '';
